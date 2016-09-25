@@ -9,7 +9,7 @@ public class Movie {
     private String title;
     private String release_date;
     private String language;
-    private String rate;
+    private Float rate;
     private String popular;
     private String id;
     @Override
@@ -65,11 +65,11 @@ public class Movie {
         this.language = language;
     }
 
-    public String getRate() {
+    public Float getRate() {
         return rate;
     }
 
-    public void setRate(String rate) {
+    public void setRate(Float rate) {
         this.rate = rate;
     }
 

@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
@@ -65,7 +66,11 @@ public class DetailsActivityFragment extends Fragment {
             movie.setTitle(moiveArray[2]);
             movie.setRelease_date(moiveArray[3]);
             movie.setLanguage(moiveArray[4]);
-            movie.setRate(moiveArray[5]);
+            try {
+                movie.setRate(Float.parseFloat(moiveArray[5]));
+            }catch (Exception ex){
+                movie.setRate(0.0f);
+            }
             movie.setPopular(moiveArray[6]);
             movie.setId(moiveArray[7]);
             FetchTrailerTask fetchTrailerTask=new FetchTrailerTask();
@@ -77,6 +82,10 @@ public class DetailsActivityFragment extends Fragment {
                     .setText(movie.getTitle());
             ((TextView) rootView.findViewById(R.id.desc))
                     .setText(movie.getDescription());
+            ((TextView) rootView.findViewById(R.id.rleaseDate))
+                    .setText(movie.getRelease_date());
+            ((RatingBar) rootView.findViewById(R.id.ratingBar))
+                    .setRating(movie.getRate()/2);
             ImageView image=((ImageView) rootView.findViewById(R.id.poster));
             Picasso.with(getContext()) //
                     .load(url+movie.getPoster()) //

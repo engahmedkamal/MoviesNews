@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import main.manageDB.FetchFavouritesAsyncTask;
 import main.models.Movie;
 
 /**
@@ -35,15 +37,16 @@ import main.models.Movie;
  */
 public class MainActivityFragment extends Fragment {
     public ImageAdapter image;
-    public List<Movie> movieList;
+    public List<Movie> movieList=new ArrayList<>();
     public MainActivityFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        updateView();
+
         image = new ImageAdapter(getContext(), new ArrayList<Movie>());
+        updateView();
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         GridView gridview = (GridView) rootView.findViewById(R.id.gridview);
         gridview.setAdapter(image);
@@ -66,7 +69,7 @@ public class MainActivityFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.refresh){
+        if(item.getItemId() == R.id.action_settings){
             updateView();
         }
         return super.onOptionsItemSelected(item);
@@ -77,7 +80,11 @@ public class MainActivityFragment extends Fragment {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String sort = prefs.getString(getString(R.string.pref_sort_key),
                 getString(R.string.pref_sort_default));
+
+        if(Integer.parseInt(sort) != 2)
         fetch.execute(sort);
+        else
+            new FetchFavouritesAsyncTask(getContext(), image, movieList).execute();
     }
     public class FetchMoviesTask extends AsyncTask<String, Void, List<Movie>> {
         private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
@@ -93,7 +100,7 @@ public class MainActivityFragment extends Fragment {
             final String OWM_TITLE = "original_title";
             final String OWM_LANGUAGE = "original_language";
             final String OWM_MOST_POPULAR = "popularity";
-            final String OWM_HIGHEST_RATE = "vote_count";
+            final String OWM_HIGHEST_RATE = "vote_average";
             final String OWM_ID="id";
             JSONObject forecastJson = new JSONObject(movieJsonStr);
             JSONArray movieArray = forecastJson.getJSONArray(OWM_LIST);
@@ -118,7 +125,7 @@ public class MainActivityFragment extends Fragment {
                 movie_var.setRelease_date(movie.getString(OWM_RELEASEDATE));
                 movie_var.setLanguage(movie.getString(OWM_LANGUAGE));
                 movie_var.setPopular(movie.getString(OWM_MOST_POPULAR));
-                movie_var.setRate(movie.getString(OWM_HIGHEST_RATE));
+                movie_var.setRate(Float.parseFloat(movie.getString(OWM_HIGHEST_RATE)));
                 movie_var.setId(movie.getString(OWM_ID));
                 result.add(movie_var);
             }

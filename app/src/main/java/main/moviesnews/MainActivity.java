@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 import main.models.Movie;
 
-public class MainActivity extends AppCompatActivity implements MovieListener{
+public class MainActivity extends AppCompatActivity{
     boolean mTwoPane;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,11 +28,8 @@ public class MainActivity extends AppCompatActivity implements MovieListener{
         } else {
             mTwoPane = true;
         }
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-//        getFragmentManager().beginTransaction().replace(R.id.detail_container,new DetailsActivityFragment()).commit();
-//
     }
 
     @Override
@@ -57,18 +54,4 @@ public class MainActivity extends AppCompatActivity implements MovieListener{
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void setSelectedmovie(Movie movie) {
-        if (mTwoPane) {
-            DetailsActivityFragment detailsFragment= new DetailsActivityFragment();
-            Bundle extras= new Bundle();
-            extras.putString("id", movie.getId());
-            detailsFragment.setArguments(extras);
-        } else {
-            //Case Single Pane UI
-            Intent i = new Intent(this, DetailsActivity.class);
-            i.putExtra("id", movie.getId());
-            startActivity(i);
-        }
-    }
 }

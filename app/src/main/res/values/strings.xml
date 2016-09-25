@@ -28,10 +28,12 @@
     <string-array name="pref_list_titles">
         <item>popular</item>
         <item>top rated</item>
+        <item>favourite</item>
     </string-array>
     <string-array name="pref_list_values">
         <item>1</item>
         <item>0</item>
+        <item>2</item>
     </string-array>
     <string name="pref_sort_key" translatable="false">sort</string>
     <string name="pref_sort_default" translatable="false">1</string>
