@@ -37,10 +37,15 @@ import main.models.Movie;
  */
 public class MainActivityFragment extends Fragment {
     public ImageAdapter image;
-    public List<Movie> movieList=new ArrayList<>();
+    public List<Movie> movieList = new ArrayList<>();
+
     public MainActivityFragment() {
     }
+    private OnItemSelectedListener listener;
 
+    public interface OnItemSelectedListener {
+        public void onItemSelected(Movie movie);
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -53,9 +58,11 @@ public class MainActivityFragment extends Fragment {
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
-                String movie=movieList.get(position).toString();
-                Intent intent = new Intent(getActivity(), DetailsActivity.class).putExtra(Intent.EXTRA_TEXT, movie);
-                startActivity(intent);
+//                String movie = movieList.get(position).toString();
+//                Intent intent = new Intent(getActivity(), DetailsActivity.class).putExtra(Intent.EXTRA_TEXT, movie);
+//                startActivity(intent);
+                if(movieList!=null&&movieList.size()>0&&movieList.get(position)!=null)
+                listener.onItemSelected(movieList.get(position));
             }
         });
         return rootView;
@@ -69,23 +76,24 @@ public class MainActivityFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.action_settings){
+        if (item.getItemId() == R.id.action_settings) {
             updateView();
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public void updateView(){
+    public void updateView() {
         FetchMoviesTask fetch = new FetchMoviesTask();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String sort = prefs.getString(getString(R.string.pref_sort_key),
                 getString(R.string.pref_sort_default));
 
-        if(Integer.parseInt(sort) != 2)
-        fetch.execute(sort);
+        if (Integer.parseInt(sort) != 2)
+            fetch.execute(sort);
         else
             new FetchFavouritesAsyncTask(getContext(), image, movieList).execute();
     }
+
     public class FetchMoviesTask extends AsyncTask<String, Void, List<Movie>> {
         private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
 
@@ -101,7 +109,7 @@ public class MainActivityFragment extends Fragment {
             final String OWM_LANGUAGE = "original_language";
             final String OWM_MOST_POPULAR = "popularity";
             final String OWM_HIGHEST_RATE = "vote_average";
-            final String OWM_ID="id";
+            final String OWM_ID = "id";
             JSONObject forecastJson = new JSONObject(movieJsonStr);
             JSONArray movieArray = forecastJson.getJSONArray(OWM_LIST);
 
@@ -148,11 +156,11 @@ public class MainActivityFragment extends Fragment {
             BufferedReader reader = null;
             String forecastJsonStr = null;
             try {
-                 String BASE_URL ;
-                if(Integer.parseInt(params[0])==1)
-                    BASE_URL= "http://api.themoviedb.org/3/movie/popular?";
+                String BASE_URL;
+                if (Integer.parseInt(params[0]) == 1)
+                    BASE_URL = "http://api.themoviedb.org/3/movie/popular?";
                 else
-                    BASE_URL= "http://api.themoviedb.org/3/movie/top_rated?";
+                    BASE_URL = "http://api.themoviedb.org/3/movie/top_rated?";
                 final String APPID_PARAM = "api_key";
 
                 Uri builtUri = Uri.parse(BASE_URL).buildUpon()
@@ -190,7 +198,7 @@ public class MainActivityFragment extends Fragment {
                     return null;
                 }
                 forecastJsonStr = buffer.toString();
-                movieList=getMovieDataFromJson(forecastJsonStr);
+                movieList = getMovieDataFromJson(forecastJsonStr);
                 Log.e(LOG_TAG, forecastJsonStr);
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Error ", e);
@@ -218,7 +226,7 @@ public class MainActivityFragment extends Fragment {
                 if (movies.size() > 0) {
                     image.updateAdapter(movies);
                     image.notifyDataSetChanged();
-                    Log.e(LOG_TAG, "Loooooooad Imageeeees"+movies.size());
+                    Log.e(LOG_TAG, "Loooooooad Imageeeees" + movies.size());
                 }
         }
     }

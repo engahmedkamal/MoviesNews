@@ -3,6 +3,7 @@ package main.moviesnews;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -48,31 +49,38 @@ public class DetailsActivityFragment extends Fragment {
     TextView txt;
     Button button;
     Button favButton;
+    Movie movie;
     public DetailsActivityFragment() {
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        movie=(Movie)getArguments().getSerializable("movie");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Intent intent = getActivity().getIntent();
+//        Intent intent = getActivity().getIntent();
         View rootView=inflater.inflate(R.layout.fragment_details, container, false);
         favButton=(Button)rootView.findViewById(R.id.addToFavourate);
-        if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
-            String movieeString = intent.getStringExtra(Intent.EXTRA_TEXT);
-            String[]moiveArray=movieeString.split(" - ");
-            Movie movie=new Movie();
-            movie.setPoster(moiveArray[0]);
-            movie.setDescription(moiveArray[1]);
-            movie.setTitle(moiveArray[2]);
-            movie.setRelease_date(moiveArray[3]);
-            movie.setLanguage(moiveArray[4]);
-            try {
-                movie.setRate(Float.parseFloat(moiveArray[5]));
-            }catch (Exception ex){
-                movie.setRate(0.0f);
-            }
-            movie.setPopular(moiveArray[6]);
-            movie.setId(moiveArray[7]);
+//        if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
+//            String movieeString = intent.getStringExtra(Intent.EXTRA_TEXT);
+//            String[]moiveArray=movieeString.split(" - ");
+//            Movie movie=new Movie();
+//            movie.setPoster(moiveArray[0]);
+//            movie.setDescription(moiveArray[1]);
+//            movie.setTitle(moiveArray[2]);
+//            movie.setRelease_date(moiveArray[3]);
+//            movie.setLanguage(moiveArray[4]);
+//            try {
+//                movie.setRate(Float.parseFloat(moiveArray[5]));
+//            }catch (Exception ex){
+//                movie.setRate(0.0f);
+//            }
+//            movie.setPopular(moiveArray[6]);
+//            movie.setId(moiveArray[7]);
             FetchTrailerTask fetchTrailerTask=new FetchTrailerTask();
             String params[]=new String[2];
             params[0]=movie.getId();
@@ -100,10 +108,16 @@ public class DetailsActivityFragment extends Fragment {
             });
             trailerContainer = (LinearLayout) rootView.findViewById(R.id.trailersbuttons);
             reviewContainer = (LinearLayout) rootView.findViewById(R.id.reviews);
-        }
+//        }
         return rootView;
     }
-
+    public static DetailsActivityFragment newInstance(Movie movie){
+        DetailsActivityFragment detailsActivityFragment=new DetailsActivityFragment();
+        Bundle args=new Bundle();
+        args.putSerializable("movie",movie);
+        detailsActivityFragment.setArguments(args);
+        return detailsActivityFragment;
+    }
     public void updateBtnList(){
         if(trailerList!=null)
         for (Trailer trailerVar:trailerList){

@@ -1,9 +1,12 @@
 package main.models;
 
+import java.io.Serializable;
+
 /**
  * Created by ahmed on 13/08/16.
  */
-public class Movie {
+public class Movie implements Serializable {
+    private static final long serialVersionUID = -6099312954099962806L;
     private String poster;
     private String description;
     private String title;
