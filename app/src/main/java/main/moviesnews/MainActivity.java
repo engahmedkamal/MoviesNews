@@ -63,21 +63,15 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
 
     @Override
     public void onItemSelected(Movie movie) {
-        if (movie == null) {
-            Toast.makeText(this, "Wrong", Toast.LENGTH_LONG).show();
-        } else {
             if (mTwoPane) {
                 DetailsActivityFragment fAF = DetailsActivityFragment.newInstance(movie);
                 FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
                 ft.replace(R.id.detail_container, fAF);
                 ft.commit();
-
             } else {
-
-                Intent i = new Intent(this, DetailsActivityFragment.class);
+                Intent i = new Intent(this, DetailsActivity.class);
                 i.putExtra("movie", movie);
                 startActivity(i);
             }
-        }
     }
 }

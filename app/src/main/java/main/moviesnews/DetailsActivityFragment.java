@@ -50,104 +50,92 @@ public class DetailsActivityFragment extends Fragment {
     Button button;
     Button favButton;
     Movie movie;
+
     public DetailsActivityFragment() {
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        movie=(Movie)getArguments().getSerializable("movie");
+        movie = (Movie) getArguments().getSerializable("movie");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-//        Intent intent = getActivity().getIntent();
-        View rootView=inflater.inflate(R.layout.fragment_details, container, false);
-        favButton=(Button)rootView.findViewById(R.id.addToFavourate);
-//        if (intent != null && intent.hasExtra(Intent.EXTRA_TEXT)) {
-//            String movieeString = intent.getStringExtra(Intent.EXTRA_TEXT);
-//            String[]moiveArray=movieeString.split(" - ");
-//            Movie movie=new Movie();
-//            movie.setPoster(moiveArray[0]);
-//            movie.setDescription(moiveArray[1]);
-//            movie.setTitle(moiveArray[2]);
-//            movie.setRelease_date(moiveArray[3]);
-//            movie.setLanguage(moiveArray[4]);
-//            try {
-//                movie.setRate(Float.parseFloat(moiveArray[5]));
-//            }catch (Exception ex){
-//                movie.setRate(0.0f);
-//            }
-//            movie.setPopular(moiveArray[6]);
-//            movie.setId(moiveArray[7]);
-            FetchTrailerTask fetchTrailerTask=new FetchTrailerTask();
-            String params[]=new String[2];
-            params[0]=movie.getId();
-            fetchTrailerTask.execute(params);
-            String url="http://image.tmdb.org/t/p/w185/";
-            ((TextView) rootView.findViewById(R.id.movie_title))
-                    .setText(movie.getTitle());
-            ((TextView) rootView.findViewById(R.id.desc))
-                    .setText(movie.getDescription());
-            ((TextView) rootView.findViewById(R.id.rleaseDate))
-                    .setText(movie.getRelease_date());
-            ((RatingBar) rootView.findViewById(R.id.ratingBar))
-                    .setRating(movie.getRate()/2);
-            ImageView image=((ImageView) rootView.findViewById(R.id.poster));
-            Picasso.with(getContext()) //
-                    .load(url+movie.getPoster()) //
-                    .into(image);
-            new ManageFavouritesAsyncTask(getActivity(), movie, false, favButton).execute();
+        View rootView = inflater.inflate(R.layout.fragment_details, container, false);
+        favButton = (Button) rootView.findViewById(R.id.addToFavourate);
+        FetchTrailerTask fetchTrailerTask = new FetchTrailerTask();
+        String params[] = new String[2];
+        params[0] = movie.getId();
+        fetchTrailerTask.execute(params);
+        String url = "http://image.tmdb.org/t/p/w185/";
+        ((TextView) rootView.findViewById(R.id.movie_title))
+                .setText(movie.getTitle());
+        ((TextView) rootView.findViewById(R.id.desc))
+                .setText(movie.getDescription());
+        ((TextView) rootView.findViewById(R.id.rleaseDate))
+                .setText(movie.getRelease_date());
+        ((RatingBar) rootView.findViewById(R.id.ratingBar))
+                .setRating(movie.getRate() / 2);
+        ImageView image = ((ImageView) rootView.findViewById(R.id.poster));
+        Picasso.with(getContext()) //
+                .load(url + movie.getPoster()) //
+                .into(image);
+        new ManageFavouritesAsyncTask(getActivity(), movie, false, favButton).execute();
 
-            favButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new ManageFavouritesAsyncTask(getActivity(), movie,true, favButton).execute();
-                }
-            });
-            trailerContainer = (LinearLayout) rootView.findViewById(R.id.trailersbuttons);
-            reviewContainer = (LinearLayout) rootView.findViewById(R.id.reviews);
+        favButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new ManageFavouritesAsyncTask(getActivity(), movie, true, favButton).execute();
+            }
+        });
+        trailerContainer = (LinearLayout) rootView.findViewById(R.id.trailersbuttons);
+        reviewContainer = (LinearLayout) rootView.findViewById(R.id.reviews);
 //        }
         return rootView;
     }
-    public static DetailsActivityFragment newInstance(Movie movie){
-        DetailsActivityFragment detailsActivityFragment=new DetailsActivityFragment();
-        Bundle args=new Bundle();
-        args.putSerializable("movie",movie);
+
+    public static DetailsActivityFragment newInstance(Movie movie) {
+        DetailsActivityFragment detailsActivityFragment = new DetailsActivityFragment();
+        Bundle args = new Bundle();
+        args.putSerializable("movie", movie);
         detailsActivityFragment.setArguments(args);
         return detailsActivityFragment;
     }
-    public void updateBtnList(){
-        if(trailerList!=null)
-        for (Trailer trailerVar:trailerList){
-            containerBtn=new LinearLayout(this.getContext());
-            containerBtn.setOrientation(LinearLayout.HORIZONTAL);
-            txt=new TextView(this.getContext());
-            button = new Button(this.getContext());
-            button.setBackgroundResource(R.drawable.play);
-            button.setOnClickListener(view -> {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v="+trailerVar.getKey())));
-            });
-            txt.setText(trailerVar.getName());
-            containerBtn.addView(button);
-            containerBtn.addView(txt);
-            trailerContainer.addView(containerBtn);
-        }
+
+    public void updateBtnList() {
+        if (trailerList != null)
+            for (Trailer trailerVar : trailerList) {
+                containerBtn = new LinearLayout(this.getContext());
+                containerBtn.setOrientation(LinearLayout.HORIZONTAL);
+                txt = new TextView(this.getContext());
+                button = new Button(this.getContext());
+                button.setBackgroundResource(R.drawable.play);
+                button.setOnClickListener(view -> {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + trailerVar.getKey())));
+                });
+                txt.setText(trailerVar.getName());
+                containerBtn.addView(button);
+                containerBtn.addView(txt);
+                trailerContainer.addView(containerBtn);
+            }
     }
-    public void updateReviewList(){
-        for(Reviews reviews:reviewsList){
-            txt=new TextView(this.getContext());
-            txt.setText(reviews.getAuthor()+":-");
+
+    public void updateReviewList() {
+        for (Reviews reviews : reviewsList) {
+            txt = new TextView(this.getContext());
+            txt.setText(reviews.getAuthor() + ":-");
             reviewContainer.addView(txt);
-            txt=new TextView(this.getContext());
+            txt = new TextView(this.getContext());
             txt.setText(reviews.getContent());
             reviewContainer.addView(txt);
-            txt=new TextView(this.getContext());
+            txt = new TextView(this.getContext());
             txt.setText("___________________________________");
             reviewContainer.addView(txt);
         }
     }
+
     public class FetchTrailerTask extends AsyncTask<String, Void, List<Trailer>> {
         private final String LOG_TAG = FetchTrailerTask.class.getSimpleName();
 
@@ -159,9 +147,9 @@ public class DetailsActivityFragment extends Fragment {
             final String OWM_KEY = "key";
             final String OWM_NAME = "name";
             final String OWM_SITE = "site";
-            final String OWM_SIZE= "size";
+            final String OWM_SIZE = "size";
             final String OWM_TYPE = "type";
-            final String OWM_ID="id";
+            final String OWM_ID = "id";
             JSONObject forecastJson = new JSONObject(trailerJsonStr);
             JSONArray trailerArray = forecastJson.getJSONArray(OWM_LIST);
             Trailer trailer_var;
@@ -184,6 +172,7 @@ public class DetailsActivityFragment extends Fragment {
             }
             return result;
         }
+
         private List<Reviews> getReviewDataFromJson(String reviewsJsonStr)
                 throws JSONException {
             final String OWM_LIST = "results";
@@ -208,23 +197,24 @@ public class DetailsActivityFragment extends Fragment {
 
         @Override
         protected List<Trailer> doInBackground(String... params) {
-            callWebservice(params[0],1);
-            callWebservice(params[0],2);
+            callWebservice(params[0], 1);
+            callWebservice(params[0], 2);
             return trailerList;
         }
-        public void callWebservice(String params,int type){
+
+        public void callWebservice(String params, int type) {
             HttpURLConnection urlConnection = null;
             HttpURLConnection urlConnection2 = null;
             BufferedReader reader = null;
             try {
                 //region
                 String BASE_URL;
-                if(type==1)
-                     BASE_URL =
-                        "http://api.themoviedb.org/3/movie/"+params+"/videos?";
+                if (type == 1)
+                    BASE_URL =
+                            "http://api.themoviedb.org/3/movie/" + params + "/videos?";
                 else
                     BASE_URL =
-                            "http://api.themoviedb.org/3/movie/"+params+"/reviews?";
+                            "http://api.themoviedb.org/3/movie/" + params + "/reviews?";
                 final String APPID_PARAM = "api_key";
 
                 Uri builtUri = Uri.parse(BASE_URL).buildUpon()
@@ -241,7 +231,7 @@ public class DetailsActivityFragment extends Fragment {
                 StringBuffer buffer = new StringBuffer();
                 if (inputStream == null) {
                     // Nothing to do.
-                    return ;
+                    return;
                 }
                 reader = new BufferedReader(new InputStreamReader(inputStream));
 
@@ -251,17 +241,17 @@ public class DetailsActivityFragment extends Fragment {
                 }
 
                 if (buffer.length() == 0) {
-                    return ;
+                    return;
                 }
                 forecastJsonStr = buffer.toString();
-                if(type==1)
-                trailerList=getTrailerDataFromJson(forecastJsonStr);
+                if (type == 1)
+                    trailerList = getTrailerDataFromJson(forecastJsonStr);
                 else
-                reviewsList=getReviewDataFromJson(forecastJsonStr);
+                    reviewsList = getReviewDataFromJson(forecastJsonStr);
                 Log.e(LOG_TAG, forecastJsonStr);
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Error ", e);
-                return ;
+                return;
             } finally {
                 if (urlConnection != null) {
                     urlConnection.disconnect();
@@ -275,11 +265,12 @@ public class DetailsActivityFragment extends Fragment {
                 }
             }
         }
+
         @Override
         protected void onPostExecute(List<Trailer> trailers) {
             if (trailers != null)
-              updateBtnList();
-            if(reviewsList!=null)
+                updateBtnList();
+            if (reviewsList != null)
                 updateReviewList();
         }
     }

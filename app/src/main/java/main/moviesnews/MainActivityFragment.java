@@ -1,5 +1,6 @@
 package main.moviesnews;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -41,6 +42,16 @@ public class MainActivityFragment extends Fragment {
 
     public MainActivityFragment() {
     }
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (activity instanceof OnItemSelectedListener) {
+            listener = (OnItemSelectedListener) activity;
+        } else {
+            throw new ClassCastException(activity.toString()
+                    + " must implement ItemsListFragment.OnItemSelectedListener");
+        }
+    }
     private OnItemSelectedListener listener;
 
     public interface OnItemSelectedListener {
@@ -58,10 +69,8 @@ public class MainActivityFragment extends Fragment {
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
-//                String movie = movieList.get(position).toString();
-//                Intent intent = new Intent(getActivity(), DetailsActivity.class).putExtra(Intent.EXTRA_TEXT, movie);
-//                startActivity(intent);
                 if(movieList!=null&&movieList.size()>0&&movieList.get(position)!=null)
+                    if(listener!=null)
                 listener.onItemSelected(movieList.get(position));
             }
         });
